@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset = "UTF-8">
+    <title>Kanji-ctionary</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/rxjs@6.6.2/bundles/rxjs.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@convergence/convergence/convergence.global.min.js"></script>
+</head>
+<body>
+    <div id = "front_page">
+        <br>
+        <!-- Title -->
+        <div>
+            <h1 id = "title">KANJI-CTIONARY</h1>
+            <span id = "red_sun"></span>
+        </div>
+
+        <!-- Create / Join Room Buttons-->
+        <button class = "connect_btn create" onclick = "username_prompt(true)">CREATE ROOM</button>
+        <button class = "connect_btn join" onclick = "username_prompt(false)">JOIN ROOM</button>
+
+        <!-- Username and Room Info Connection Prompt-->
+        <div class = "modal">
+            <div id = "setup_modal_content">
+                <span id = "close_modal" onclick = "close_modal(true)">X</span>
+                <input class = "input_connect" id = "room_name_input" type="text" placeholder="Room Name" autocomplete="off">
+                <div class = "input_err">*room name must be less than 10 characters</div>
+                <div class = "input_err">*please input something</div>
+                <input class = "input_connect" id = "username_input" type="text" placeholder="Your Name" autocomplete="off">
+                <div class = "input_err">*player name must be less than 10 characters</div>
+                <div class = "input_err">*please input something</div>
+                <div class = "input_err">*that name is not allowed</div>
+                <button id = "submit_btn" onclick = "check_input_values()"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id = "loader"></div>
+    <div id = "loader_text">Creating Room...</div>
+
+
+    <div id = "pregame_screen">
+        <h1 id = "room_title"></h1>
+        <h3 id = "room_chapter">CHAPTER:</h3>
+        <div id = "start_game_container">
+            <button id = "start_game" onclick = "start_game()" disabled>START</button>
+            <button id = "chapter_button" onclick="open_chapter_modal()">CHOOSE CHAPTER</button>
+        </div>
+        <div id = "name_list" style = "font-size: 8vw;">
+            <div class = "name_container">
+                <div class = "name"></div>
+                <div class = "img_container">
+                    <img class = "name_img" src="images/home.gif" alt="">
+                </div>
+            </div>
+            <div class = "name_container">
+                <div class = "name"></div>
+                <div class= "ready_box">READY</div>
+                <div class = "img_container">
+                    <img class = "name_img" src="images/contactus.gif" alt="">
+                    <button class = "remove_player" onclick = "remove_player('1')">REMOVE PLAYER</button>
+                </div>
+
+            </div>
+            <div class = "name_container">
+                <div class = "name"></div>
+                <div class= "ready_box">READY</div>
+                <div class = "img_container">
+                    <img class = "name_img" src="images/links.gif" alt="">
+                    <button class = "remove_player" onclick = "remove_player('2')">REMOVE PLAYER</button>
+                </div>
+            </div>
+            <div class = "name_container">
+                <div class = "name"></div>
+                <div class= "ready_box">READY</div>
+                <div class = "img_container">
+                    <img class = "name_img" src="images/basics.gif" alt="">
+                    <button class = "remove_player" onclick = "remove_player('3')">REMOVE PLAYER</button>
+                </div>
+            </div>
+
+        </div>
+        <div id = "chatbox" style = "font-size: 8vw;"></div>
+        <div id = "chat_input_container">
+            <input type="text" id = "chat_input" placeholder="Type here...">
+        </div>
+        <div class = "modal">
+            <div id = "chapter_modal_content">
+                <span id = "close_modal" onclick = "close_modal(false)">X</span>
+                <div style="margin-left: 2vw;">
+                    <h2 class = "textbook">Yookoso 1</h2>
+                    <button class = "chapter" onclick = "set_chapter('Yookoso 1 CH1')">CH1</button>
+                    <button class = "chapter">CH2</button>
+                </div> <br><br><br><br> <!-- Super lazy way to do this ...-->
+                <div style="margin-left: 2vw;">
+                    <h2 class = "textbook">Yookoso 2</h2>
+                    <button class = "chapter">CH1</button>
+                    <button class = "chapter">CH2</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    
+    <script type = "text/javascript" src = "script.js"></script>
+    <script type = "text/javascript" src = "kanji_file.js"></script>
+</body>
+</html>

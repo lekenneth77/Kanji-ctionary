@@ -1,0 +1,383 @@
+body {
+    background-color: rgb(189, 189, 189);
+    margin: 0;
+}
+
+@font-face {
+    font-family: "UDDigiKyokashoN-R";
+    src: url("fonts/UDDigiKyokashoNP-R.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
+#front_page {
+    display: block;
+}
+
+#pregame_screen {
+  display: none;
+}
+
+
+#title {
+    font-family: "UDDigiKyokashoN-R", arial, serif;
+    font-weight: bolder;
+    font-size: 6vw;
+    text-align: center;
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    top: 5%;
+    user-select: none;
+}
+
+#red_sun {
+    border-radius: 50%;
+    background-color: red;
+    height: 18vw;
+    width: 18vw;
+    display: block;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: -1;
+}
+
+
+.connect_btn {
+    font-family: "UDDigiKyokashoN-R", arial, serif;
+    position: absolute;
+    bottom: 15%;
+    width: 25vw;
+    height: 12vw;
+    font-size: 5vw;
+    color: white;
+    border: none;
+    border-radius: 1vw;
+    cursor: pointer;
+    user-select: none;
+}
+
+.create {
+    left: 12%;
+    background-color: #3d7b47;
+}
+
+.create:hover {
+    background-color: #28502d;
+}
+
+.join {
+    right: 12%;
+    background-color: #144683;
+}
+
+.join:hover {
+    background-color: #0A2342;
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: none; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+
+  #setup_modal_content {
+    margin: 6% auto; /* 15% from the top and centered */
+    width: 30%; /* Could be more or less, depending on screen size */
+    height: 70%;
+    background-color: #fefefe;
+    border: .2vw solid black;
+  }
+
+  #close_modal {
+    display: block;
+    float: right;
+    cursor: pointer;
+    color: rgb(81, 81, 81);
+    font-size: 2vw;
+    margin-right: .5vw;
+  }
+
+  .input_connect {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5vw;
+    height: 6vw;
+    width: 20vw;
+    font-size: 3vw;
+    border: .5vw solid gray;
+}
+
+.input_err {
+    display: none;
+    margin-left: 4vw;
+    font-size: 1vw;
+    color: red;
+}
+
+#submit_btn {
+    position: relative;
+    font-size: 4.5vw;
+    margin-top: 4vw;
+    margin-right: 2vw;
+    float: right;
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    user-select: none;
+
+}
+
+#submit_btn:hover {
+    background-color: rgb(166, 1, 1);
+}
+
+#loader {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    width: 18vw;
+    height: 18vw;
+    top: 22%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2vw solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 2vw solid #3498db;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+  }
+  
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  #loader_text {
+    display: none;
+    position: absolute;
+    top: 68%;
+    left: 2%;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-size: 4vw;
+    color: rgb(40, 40, 40);
+  }
+
+  #room_title {
+    display: inline;
+    font-family: "UDDigiKyokashoN-R", arial, serif;
+    margin-top: 0;
+    margin-left: 2vw;
+    font-size: 3vw;
+  }
+
+  #room_chapter {
+    font-family: "UDDigiKyokashoN-R", arial, serif;
+    margin-top: 0;
+    margin-left: 2vw;
+    font-size: 2vw;
+    font-style: italic;
+  }
+
+  #start_game_container {
+    display: flex;
+    background-color: none;
+    width: 100%;
+  }
+
+  #start_game {
+    font-family: "UDDigiKyokashoN-R", arial, serif;
+    margin: 12vw;
+    margin-top: 0;
+    margin-right: 9vw;
+    margin-left: 7vw;
+    width: 22vw;
+    height: 8vw;
+    cursor: pointer;
+    border-radius: 1vw;
+    font-size: 6vw;
+  }
+
+  /* START HERE Add the hover effect*/
+
+  #chapter_button {
+    font-family: "UDDigiKyokashoN-R", arial, serif;
+    margin-top: 2vw;
+    width: 16vw;
+    height: 4vw;
+    font-size: 1.5vw;
+  }
+
+  #chapter_modal_content {
+    margin: 6% auto; /* 15% from the top and centered */
+    width: 80%; /* Could be more or less, depending on screen size */
+    height: 80%;
+    background-color: #fefefe;
+    border: .2vw solid black;
+  }
+
+  .textbook {
+    text-decoration: underline;
+    font-size: 3vw;
+  }
+
+  .chapter {
+    width: 8vw;
+    height: 4vw;
+    font-size: 2vw;
+  }
+
+#name_list {
+    background-color: gray;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border: .5vw solid black;
+    top: 40%;
+    height: 55%;
+    left: 3%;
+    width: 54%;
+}
+
+.name_container {
+  position: relative;
+  flex-basis: 50%;
+  text-align: center;
+  font-size: 3vw;
+  color: white;
+  display: block;
+}
+
+.name {
+  text-align: center;
+}
+
+.name_img {
+  height: 8vw;
+  width: 8vw;
+  display: none;
+  margin: auto;
+  z-index: 2;
+}
+
+.ready_box {
+  display: none;
+  position: absolute;
+  transform: rotate(90deg);
+  /* Legacy vendor prefixes that you probably don't need... */
+  /* Safari */
+  -webkit-transform: rotate(90deg);
+  /* Firefox */
+  -moz-transform: rotate(90deg);
+  /* IE */
+  -ms-transform: rotate(90deg);
+  /* Opera */
+  -o-transform: rotate(90deg);
+  font-size: 2vw;
+  right: 5vw;
+  top: 6.4vw;
+  color: rgb(1, 103, 1);
+  font-weight: bold;
+  user-select: none;
+}
+
+.remove_player {
+  position: absolute;
+  display: none;
+  width: 7vw;
+  top: 40%;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  border: .1vw solid black;
+  font-size: 1vw;
+}
+
+.remove_player:hover {
+  background-color: rgb(185, 185, 185);
+}
+
+.img_container {
+  margin: auto;
+  width: fit-content;
+}
+
+.img_container:hover .remove_player {
+  display: block;
+}
+
+#chatbox {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    top: 10%;
+    height: 77%;
+    width: 28%;
+    right: 5%;
+    border: .2vw solid black;
+    overflow: auto;
+}
+
+.chat_message {
+  font-size: 1.5vw;
+  font-family: "UDDigiKyokashoN-R", arial, serif;
+  padding: .5vw;
+}
+
+.console_message {
+  font-style: italic;
+  color: gray;
+}
+
+#chat_input_container {
+    position: absolute;
+    top: 87%;
+    height: 10%;
+    width: 28%;
+    right: 5%;
+    border: .2vw solid black;
+    background-color: white;
+}
+
+#chat_input {
+    display: block;
+    margin: auto;
+    margin-top: 1vw;
+    left: 0;
+    right: 0;
+    width: 90%;
+    height: 40%;
+    font-size: 2vw;
+    font-family: "UDDigiKyokashoN-R", arial, serif;
+}
+
+
+
