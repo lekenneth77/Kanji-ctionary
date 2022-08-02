@@ -40,14 +40,24 @@
     <div id = "loader"></div>
     <div id = "loader_text">Creating Room...</div>
 
+    <!-- Chat box -->
+    <div id = "chatbox" style = "font-size: 8vw;"></div>
+    <div id = "chat_input_container">
+        <input type="text" id = "chat_input" placeholder="Type here...">
+    </div>
 
+    <!-- Pregame Screen -->
     <div id = "pregame_screen">
+
+        <!-- Top of the Screen Stuff -->
         <h1 id = "room_title"></h1>
         <h3 id = "room_chapter">CHAPTER:</h3>
         <div id = "start_game_container">
             <button id = "start_game" onclick = "start_game()" disabled>START</button>
             <button id = "chapter_button" onclick="open_chapter_modal()">CHOOSE CHAPTER</button>
         </div>
+
+        <!-- Player Names and Images -->
         <div id = "name_list" style = "font-size: 8vw;">
             <div class = "name_container">
                 <div class = "name"></div>
@@ -82,10 +92,8 @@
             </div>
 
         </div>
-        <div id = "chatbox" style = "font-size: 8vw;"></div>
-        <div id = "chat_input_container">
-            <input type="text" id = "chat_input" placeholder="Type here...">
-        </div>
+
+        <!--Chapter Modal-->
         <div class = "modal">
             <div id = "chapter_modal_content">
                 <span id = "close_modal" onclick = "close_modal(false)">X</span>
@@ -99,9 +107,56 @@
                     <button class = "chapter">CH1</button>
                     <button class = "chapter">CH2</button>
                 </div>
-
             </div>
         </div>
+    </div>
+
+
+    <!-- Game content -->
+    <div id = "game_screen">
+        <!-- Chat box -->
+        <div id = "player_list_container">
+            <div class = "player_container">
+                <div class = "img_container">
+                    <img class = "game_name_img" style="margin-top: 1vw;" src="images/home.gif" alt="">
+                </div>
+                <div class = "game_name"></div>
+            </div>
+            <div class = "player_container">
+                <div class = "img_container">
+                    <img class = "game_name_img" style="margin-top: 1vw;" src="images/contactus.gif" alt="">
+                </div>
+                <div class = "game_name"></div>
+            </div>
+            <div class = "player_container">
+                <div class = "img_container">
+                    <img class = "game_name_img" style="margin-top: 1vw;" src="images/links.gif" alt="">
+                </div>
+                <div class = "game_name"></div>
+            </div>
+            <div class = "player_container" style="border: none">
+                <div class = "img_container">
+                    <img class = "game_name_img" style="margin-top: 1vw;" src="images/basics.gif" alt="">
+                </div>
+                <div class = "game_name"></div>
+            </div>
+            
+        </div>
+        <div id = "drawing_container">
+            <div id = "word_container">
+                <span id = "toolbar">
+                    <img class = "toolbar_buttons" src="images/eraser.png" alt=""><img class = "toolbar_buttons" src="images/undo.png" alt=""><img class = "toolbar_buttons" src="images/clear.png" alt="">
+                </span>
+                <span class = "game_top" id = "game_kana"></span>
+                <span class = "game_top" id = "game_english"></span>
+                <!-- <span class = "game_top" id = "game_kana">test</span>
+                <span class = "game_top" id = "game_english">jank</span> -->
+                <span id = "timer">30</span>
+            </div>
+            <canvas id = "drawing_board"></canvas>
+            <div id = "drawing_overlay"><div id = "overlay_text">player 1 will draw!</div></div>
+        </div>
+        
     </div>
 
     

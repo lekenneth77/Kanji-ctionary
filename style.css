@@ -18,6 +18,16 @@ body {
   display: none;
 }
 
+#game_screen {
+  position: absolute;
+  display: none;
+  flex-direction: row;
+  margin-top: 2%;
+  width: 90%;
+  margin-left: 5%;
+  height: 90%;
+}
+
 
 #title {
     font-family: "UDDigiKyokashoN-R", arial, serif;
@@ -285,6 +295,14 @@ body {
   z-index: 2;
 }
 
+.game_name_img {
+  height: 8vw;
+  width: 8vw;
+  display: none;
+  margin: auto;
+  z-index: 2;
+}
+
 .ready_box {
   display: none;
   position: absolute;
@@ -335,15 +353,16 @@ body {
 
 #chatbox {
     position: absolute;
-    display: flex;
+    display: none;
     flex-direction: column;
     background-color: white;
-    top: 10%;
-    height: 77%;
-    width: 28%;
-    right: 5%;
+    top: 2vw;
+    height: 75%;
+    width: 22.8%;
+    right: 2.75%;
     border: .2vw solid black;
     overflow: auto;
+    z-index: 2;
 }
 
 .chat_message {
@@ -359,12 +378,14 @@ body {
 
 #chat_input_container {
     position: absolute;
-    top: 87%;
-    height: 10%;
-    width: 28%;
-    right: 5%;
+    display: none;
+    top: 79.5%;
+    height: 14.4%;
+    width: 22.8%;
+    right: 2.75%;
     border: .2vw solid black;
     background-color: white;
+    z-index: 2;
 }
 
 #chat_input {
@@ -377,7 +398,91 @@ body {
     height: 40%;
     font-size: 2vw;
     font-family: "UDDigiKyokashoN-R", arial, serif;
+    border: .1vw solid black;
+}
+
+#player_list_container {
+  flex-basis: 20%;
+  background-color: white;
+  border: .2vw solid black;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.player_container {
+  flex-basis: 25%;
+  border-bottom: .2vw solid black;
+}
+
+.game_name {
+  text-align: center;
+  font-size: 2vw;
+  margin: none;
+}
+
+#drawing_container {
+  flex-basis: 56%;
+  background-color: white;
+  border: .2vw solid black;
+  height: 100%;
+  width: 1vw;
+}
+
+#drawing_overlay {
+  display: block;
+  position: absolute;
+  top: 0;
+  opacity: .8;
+  background: rgba(0, 0, 0, 0.9);
+  width: 56%;
+  height: 100.5%;
+  color: white;
+  font-size: 5vw;
+  text-align: center;
+}
+
+#overlay_text {
+  position: relative;
+  top: 20vw;
 }
 
 
+#word_container {
+  display: flex;
+  border-bottom: 0.2vw solid black;
+  height: 10%;
+  width: 100%;
+}
 
+.game_top {
+  text-align: center;
+  font-family: "UDDigiKyokashoN-R", arial, serif;
+  flex-basis: 32%;
+  font-size: 2vw;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#game_english {
+  margin-left: none;
+}
+
+.toolbar_buttons {
+  width: 4vw;
+  height: 4vw;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#timer {
+  align-self: flex-end;
+  flex-basis: 10%;
+  text-align: center;
+  float: right;
+  font-size: 3vw;
+  margin-top: auto;
+  margin-bottom: auto;
+  border: .2vw solid black;
+  border-radius: 50%;
+}
