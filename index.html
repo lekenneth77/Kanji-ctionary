@@ -54,7 +54,14 @@
         <h3 id = "room_chapter">CHAPTER:</h3>
         <div id = "start_game_container">
             <button id = "start_game" onclick = "start_game()" disabled>START</button>
-            <button id = "chapter_button" onclick="open_chapter_modal()">CHOOSE CHAPTER</button>
+            <span id = "game_options">
+                <button id = "chapter_button" onclick="open_chapter_modal()">CHOOSE CHAPTER</button>
+                <div id = "input_rounds_container">
+                    <p id = "num_rounds">ROUNDS: </p>
+                    <input type="number" value = "1" id = "input_rounds">
+                </div>
+                
+            </span>
         </div>
 
         <!-- Player Names and Images -->

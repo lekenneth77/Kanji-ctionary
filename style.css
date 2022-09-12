@@ -1,5 +1,6 @@
 body {
     background-color: rgb(189, 189, 189);
+    background-image: url("images/background.png");
     margin: 0;
 }
 
@@ -91,7 +92,7 @@ body {
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 3; /* Sit on top */
     left: 0;
     top: 0;
     margin: 0;
@@ -232,13 +233,21 @@ body {
     font-size: 6vw;
   }
 
-  /* START HERE Add the hover effect*/
+
+  #game_options {
+    margin-top: -1vw;
+    width: 16vw;
+    height: 8vw;
+    display: flex;
+    flex-direction: column;
+  }
+
 
   #chapter_button {
     font-family: "UDDigiKyokashoN-R", arial, serif;
     margin-top: 2vw;
     width: 16vw;
-    height: 4vw;
+    height: 6vw;
     font-size: 1.5vw;
   }
 
@@ -260,6 +269,29 @@ body {
     height: 4vw;
     font-size: 2vw;
   }
+
+  #input_rounds_container {
+    margin-top: .5vw;
+    display: flex;
+    height: 2vw;
+  }
+
+  #input_rounds {
+    width: 3vw;
+    font-size: 1.2vw;
+  }
+
+  #num_rounds {
+    margin: 0;
+    font-size: 1.5vw;
+  }
+
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button {  
+   opacity: 1;
+}
+
+
 
 #name_list {
     background-color: gray;
@@ -476,6 +508,7 @@ body {
 }
 
 #timer {
+  user-select: none;
   align-self: flex-end;
   flex-basis: 10%;
   text-align: center;

@@ -15,12 +15,16 @@ var curr_kanjis = [];
 var curr_words;
 let ready = false;
 var started = false;
+var correct = new Set([]);
+var num_correct = 0;
+var current_drawer = "";
 
 //variables for the host
-var seconds_remaining = 31;
+var seconds_remaining = MAX_TIME;
 var host_timer;
-var current_drawer = "";
 var random_player_order = [];
+var num_rounds = 0;
+var max_rounds = 5;
 
 
 var banned_roomnames = ["ohshititsarat", "hawaiian", "testingtest", "testingkenn"];
@@ -127,6 +131,7 @@ function attempt_connection(room_name, username) {
     //display loading screen...
     document.getElementById("front_page").style.display = "none";
     document.getElementById("loader").style.display = "block";
+    document.body.style.backgroundImage = "none";
     var loader_text = document.getElementById("loader_text");
     if (create) {
         loader_text.innerHTML = "Creating Room...";
@@ -178,8 +183,7 @@ function attempt_connection(room_name, username) {
                     console.log("I'm the host!")
                     if (model != null) {
                         model.elementAt("started").value(false);
-                        let arr = [];
-                        model.elementAt("players_ready").value(arr);
+                        model.elementAt("players_ready").value([]);
                     }
                     this.domain.chat().leave(room_name);
                     this.domain.chat().remove(room_name);
@@ -226,6 +230,7 @@ function attempt_connection(room_name, username) {
                     "word_rng": -1,
                     "kanji_rng": -1,
                     "current_drawer": "",
+                    "finished_players": [],
                     "draw_arr": [],
                     "timer": 30
                 },
@@ -269,7 +274,7 @@ function attempt_connection(room_name, username) {
             //set up member disallowed events
             if (!create) {
                 document.getElementById('start_game').innerHTML = "READY";
-                document.getElementById('chapter_button').style.display = 'none';
+                document.getElementById('game_options').style.display = 'none';
                 for (let i = 0; i < MAX_PLAYERS - 1; i++) {
                     document.getElementsByClassName('remove_player')[i].disabled = true;
                 }
@@ -311,6 +316,7 @@ function reset_to_front() {
     document.getElementsByClassName("modal")[1].style.display = "none";
     document.getElementById("pregame_screen").style.display = "none";
     document.getElementById("front_page").style.display = "block";
+    document.body.style.backgroundImage = "url('images/background.png')";
     //might need to unappend all children attatched to the chatbox_container TODO
 }
 
@@ -358,7 +364,7 @@ function room_listen(room) {
 
     //Displays a message into the chatbox when a user leaves.
     room.on("user_left", e => {
-        if (user.charAt(1) == 'H') {
+        if (create) {
             send_message(e.user.displayName + " has left.", true);
         }
         console.log("That guy just left! : " + e.user.displayName)
@@ -396,7 +402,7 @@ function room_listen(room) {
             //TODO GET OUT OF THE DOMAIN
             window.location.reload();
         }
-        if (user.charAt(1) == 'H') {
+        if (create) {
             send_message(e.removedUser.displayName + " has been removed.", true);
         }
         console.log("That guy was removed! : " + e.user.displayName)
@@ -431,9 +437,59 @@ function print_members() {
 //Allows the user to press enter at the chat box to send their message.
 chat_input_box.addEventListener("keydown", e => {
     if (e.key == "Enter") {
-        send_message(document.getElementById("chat_input").value, false);
+        let msg = document.getElementById("chat_input").value;
+        if (started && (current_drawer != original_username)) { //TODO make these if statements cleaner
+            console.log("Username: " + current_drawer + " " + original_username)
+            let correct_kanji = (curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3]);
+            let correct_word = (curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3 + 2]).toLowerCase();
+            if (msg == correct_kanji || msg.toLowerCase() == correct_word) {
+                correct_guess(msg);
+            } else {
+                send_message(msg, false);
+            }
+        } else {
+            send_message(msg, false);
+        }
     }
 });
+
+function correct_guess(guess) { //TODO consider after guessing the correct one, then make the corresponding answer appear in the top bar
+    let old_size = correct.size;
+    correct.add(guess);
+    if (old_size != correct.size) {
+        let green_msg = document.createElement('div');
+        green_msg.className = "chat_message";
+        green_msg.style.color = 'green';
+        green_msg.innerHTML = guess + ", is correct!"; 
+        document.getElementById("chatbox").appendChild(green_msg);
+        if (correct.size == 2) {
+            num_correct++;
+            send_message(original_username + " has gotten it all correct!", true);
+            model.elementAt("finished_players").push(original_username);
+            let room_arr = room.info().members;
+            for (let i = 0; i < room_arr.length; i++) {
+                if (room_arr[i].user.displayName == original_username) {
+                    document.getElementsByClassName("player_container")[i].style.backgroundColor = ' rgb(74, 197, 74)';
+                    break;
+                }
+            }
+            if (model.elementAt("finished_players").value().length == (room_arr.length - 1)) {
+                document.getElementById("overlay_text").innerHTML = "Round is Complete!";
+                document.getElementById("drawing_overlay").style.display = "block";
+                if (create) {
+                    clearInterval(host_timer);
+                    seconds_remaining = MAX_TIME;
+                }
+                setTimeout(function() {next_round()}, 5000);
+            }
+        } else {
+            send_message(original_username + " has gotten one part correct!", true);
+        }
+
+    } else { //TODO maybe make a different message display when they type in the same correct answer again.
+        send_message(msg, false);
+    }
+}
 
 //Sends the chat / console message to the room.
 function send_message(message, cons) {
@@ -521,6 +577,14 @@ function modelListen(model) {
         if (model.elementAt("started").value()) {
             started = true;
             game_setup();
+        } else {
+            if (document.getElementById("game_screen").style.display == 'flex') {
+                started = false;
+                document.getElementById("overlay_text").innerHTML = "The Game is Over! You got " + num_correct + " correct!";
+                num_correct = 0;
+                document.getElementById("drawing_overlay").style.display = "block";
+                setTimeout(function() {finish_game()}, 5000);
+            }
         }
     })
 
@@ -529,25 +593,56 @@ function modelListen(model) {
         let val = model.elementAt("timer").value();
         document.getElementById("timer").innerHTML = val;
         if (val <= 0) {
-
+            document.getElementById("overlay_text").innerHTML = "Times Up! The correct answer is " + curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3];
+            document.getElementById("drawing_overlay").style.display = "block";
+            setTimeout(function() {next_round()}, 5000);
         }
     })
-
+    
+    //After the rng chooses which is the next drawer, set the current drawer to be that chosen drawer.
+    //If the chosen drawer is this current user, then set up their words and allow permission to paint.
     model.elementAt("current_drawer").on("value", e => {
-        let drawer = model.elementAt("current_drawer").value();
+        current_drawer = model.elementAt("current_drawer").value();
         canPaint = false;
         isPainting = false;
-        if (drawer == original_username) {
-            let random_kanji = model.elementAt("kanji_rng").value();
-            let random_word = model.elementAt("word_rng").value();
-            document.getElementById("game_kana").innerHTML = curr_words[curr_kanjis[random_kanji]][random_word * 3 + 1];
-            document.getElementById("game_english").innerHTML = curr_words[curr_kanjis[random_kanji]][random_word * 3 + 2];
+        if (!create) {
+            random_kanji_index = model.elementAt("kanji_rng").value();
+            random_word_index = model.elementAt("word_rng").value();
+        }
+        if (current_drawer == original_username) {
+            document.getElementById("game_kana").innerHTML = curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3 + 1];
+            document.getElementById("game_english").innerHTML = curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3 + 2];
             canPaint = true;
         } else {
             document.getElementById("game_kana").innerHTML = "";
             document.getElementById("game_english").innerHTML = "";
         }
-        document.getElementById("overlay_text").innerHTML = drawer + " will draw!";
+        document.getElementById("overlay_text").innerHTML = current_drawer + " will draw!";
+    })
+
+    //Listen for when a player has finished. If every player has finished (excluding current drawer), then
+    //end round and display complete screen.
+    //If every player has not finished, then set up the green color for the user that got it correct on this user's screen.
+    model.elementAt("finished_players").on("insert", e => {
+        let arr = model.elementAt("finished_players").value();
+        let room_arr = room.info().members;
+        if ( arr.length == (room_arr.length - 1)) {
+            document.getElementById("overlay_text").innerHTML = "Round is Complete!";
+            document.getElementById("drawing_overlay").style.display = "block";
+            if (create) {
+                clearInterval(host_timer);
+                seconds_remaining = MAX_TIME;
+            }
+            setTimeout(function() {next_round()}, 5000);
+        } else {
+            let name = arr[0];
+            for (let i = 0; i < room_arr.length; i++) {
+                if (room_arr[i].user.displayName == name) {
+                    document.getElementsByClassName("player_container")[i].style.backgroundColor = 'rgb(74, 197, 74)';
+                    break;
+                }
+            }
+        }
     })
 
     //drawing listeners
@@ -577,7 +672,7 @@ function modelListen(model) {
      
     canvas.addEventListener('pointermove', draw);
 
-    //listen for changes to the drawing board!
+    //listen for changes to the drawing board when the current drawer is drawing! Match the changes to their drawing. 
     model.elementAt("draw_arr").on("insert", e => {
         ctx.lineWidth = 20;
         ctx.lineCap = 'round';
@@ -630,26 +725,43 @@ function remove_ready_box() {
     }
 }
 
-//Sets the chapter.
+//Sets the chapter. The number of rounds will be set to the max amount of rounds based on the chosen chapter.
 function set_chapter(chapter) {
     if (create) {
         model.elementAt("chapter").value(chapter);
         document.getElementsByClassName("modal")[1].style.display = "none";
     }
+    curr_kanjis.splice(0, curr_kanjis.length);
+    let chosen_kanjis = [];
     if (chapter == "Yookoso 1 CH1") {
-        document.getElementById("room_chapter").innerHTML = "CHAPTER: " + chapter;
-        for (let i = 0; i < chp_1_kanji.length; i++) {
-            curr_kanjis.push(i);
-        }
-        // curr_kanjis = chp_1_kanji;
+        document.getElementById("room_chapter").innerHTML = "CHAPTER: " + chapter;    
+        chosen_kanjis = chp_1_kanji;
         curr_words = chp_1_words;
-        console.log(curr_kanjis)
-        console.log(curr_words)
+        
     }
+
+    for (let i = 0; i < chosen_kanjis.length; i++) {
+        curr_kanjis.push(i);
+    }
+
+    if (create) {
+        chosen_words.splice(0, chosen_words.length);
+        for (let i = 0; i < curr_kanjis.length; i++) {
+            let setup_arr = [curr_words[curr_kanjis[i]].length / 3];
+            total_questions += setup_arr[0];
+            if (curr_words[curr_kanjis[i]][1] == "") {
+                total_questions--;
+            }
+            chosen_words.push(setup_arr);
+        }
+        document.getElementById("input_rounds").value = total_questions;
+    }
+
 }
 
 //Called once the host has started the game.
 function game_setup() {
+    document.body.style.backgroundImage = "url('images/background.png')";
     canPaint = false;
     document.getElementById("pregame_screen").style.display = "none";
     document.getElementById("game_screen").style.display = "flex";
@@ -663,6 +775,16 @@ function game_setup() {
     }
 
     if (create) { //setting up the first round of the game
+        let rounds_chosen = document.getElementById("input_rounds").value;
+        if (rounds_chosen > total_questions || rounds_chosen < 1) {
+            max_rounds = total_questions;
+        } else {
+            max_rounds = rounds_chosen;
+        }
+        console.log("ROUNDS!: " + max_rounds);
+
+        //TODO kind of redundant because we do this in setup_game as well
+        chosen_words.splice(0, chosen_words.length);
         for (let i = 0; i < curr_kanjis.length; i++) {
             let setup_arr = [curr_words[curr_kanjis[i]].length / 3];
             total_questions += setup_arr[0];
@@ -671,26 +793,12 @@ function game_setup() {
             }
             chosen_words.push(setup_arr);
         }
-
-        //BASICALLY DO THIS EVERYTIME YOU MOVE TO NEXT ROUND
-        choose_rng();
-        model.elementAt("kanji_rng").value(random_kanji_index);
-        model.elementAt("word_rng").value(random_word_index);
-        let shown_kanji = curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3];
-	    chosen_words[random_kanji_index].push(shown_kanji);
-        select_random_player();
-        model.elementAt("current_drawer").value(current_drawer);
-        if (current_drawer == original_username) {
-            document.getElementById("game_kana").innerHTML = curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3 + 1];
-            document.getElementById("game_english").innerHTML = curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3 + 2];
-            canPaint = true;
-        }
-        document.getElementById("overlay_text").innerHTML = current_drawer + " will draw!";
     }
 
-    setTimeout(remove_overlay, 3000);
+    next_round(); //start the round loop
 }
 
+//Choosing next player RNG.
 function select_random_player() {
     let room_arr = room.info().members;
     let room_length = room_arr.length;
@@ -710,6 +818,7 @@ function select_random_player() {
     }
 }
 
+//Called to basically start the actual round and timer (dealt with by the host). Removes the round start information from screen. 
 function remove_overlay() {
     document.getElementById("drawing_overlay").style.display = "none";
     if (create) {
@@ -718,6 +827,8 @@ function remove_overlay() {
     }
 }
 
+//Host only.
+//Continuously called through setInterval by the host. Counts down until 0 hits or if something else has cleared the interval.
 function timer() {
     seconds_remaining--;
     document.getElementById("timer").innerHTML = seconds_remaining;
@@ -726,17 +837,79 @@ function timer() {
         console.log("Timer stopped!")
         clearInterval(host_timer);
         seconds_remaining = MAX_TIME;
-        // next_round();
+        document.getElementById("overlay_text").innerHTML = "Times Up! The correct answer is " + curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3];
+        document.getElementById("drawing_overlay").style.display = "block";
+        if (model.elementAt("started").value()) {
+            setTimeout(function() {next_round()}, 5000);
+        }
     }
-    return;
 }
 
-// function next_round() {
+//Sets up for next round.
+//Host will check if reached the end of the game.
+function next_round() {
+    //reset stuff
+    for (let i = 0; i < MAX_PLAYERS; i++) {
+        document.getElementsByClassName("player_container")[i].style.backgroundColor = "white";
+    }
+    correct.clear();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    document.getElementById("drawing_overlay").style.display = "block";
 
-// }
+    if (create) { //Host duties
+        model.elementAt("finished_players").value([]);
+        if (finished_indexes.size == curr_kanjis.length || num_rounds >= max_rounds) { //End of game
+            console.log("Finished Indexes" + finished_indexes.size)
+            console.log("Curr_kanjis: " + curr_kanjis.length)
+            model.elementAt("started").value(false);
+            num_rounds = 0;
+		    chosen_words.splice(0, chosen_words.length);
+            finished_indexes.clear();
+            document.getElementById("overlay_text").innerHTML = "The Game is Over! You got " + num_correct + " correct!";
+            num_correct = 0;
+            document.getElementById("drawing_overlay").style.display = "block";
+            clearInterval(host_timer);
+            //TODO show results or some shit.
+            setTimeout(function() {finish_game()}, 5000);
+            return;
+        } else { //Set up next round
+            choose_rng();
+            model.elementAt("kanji_rng").value(random_kanji_index);
+            model.elementAt("word_rng").value(random_word_index);
+            let shown_kanji = curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3];
+            chosen_words[random_kanji_index].push(shown_kanji);
+            select_random_player();
+            model.elementAt("current_drawer").value(current_drawer);
+            if (current_drawer == original_username) {
+                document.getElementById("game_kana").innerHTML = curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3 + 1];
+                document.getElementById("game_english").innerHTML = curr_words[curr_kanjis[random_kanji_index]][random_word_index * 3 + 2];
+                canPaint = true;
+            } else {
+                document.getElementById("game_kana").innerHTML = "";
+                document.getElementById("game_english").innerHTML = "";
+                canPaint = false;
+            }
+            document.getElementById("overlay_text").innerHTML = current_drawer + " will draw!";
+        }
+
+    }
+
+    num_rounds++;
+    if (model.elementAt("started").value()) {
+        setTimeout(function() {remove_overlay()}, 3000);
+    }
+}
+
+//Finish the game and go back to lobby.
+function finish_game() {
+    document.body.style.backgroundImage = "none";
+    document.getElementById("drawing_overlay").style.display = "none";
+    document.getElementById("game_screen").style.display = "none";
+    document.getElementById("pregame_screen").style.display = "block";
+}
+
 
 //ALL STUFF FOR THE GAME ALGORITHM
-var quizzing = false;
 var current_question = 1;
 var total_questions = 0;
 var finished_indexes = new Set([]);
